@@ -7,41 +7,81 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+typedef struct config{
+    char user[100];
+    char email[100];
+}con;
+
 void init();
 void config(int num,char* input[]);
+void printf_file_config(char type[],FILE *file_config,char input[]);
+void add(char[]);
+
 
 int main(int argc,char* argv[]){
 
     if(strcmp(argv[1],"init")==0){init();}
     if(strcmp(argv[1],"config")==0){config(argc,argv);}
-    if(strcmp(argv[1],"add")==0){}
+    if(strcmp(argv[1],"add")==0){add(argv[2]);}
+    if(strcmp(argv[1],"commit")==0){commit();}
+
 
 }
 
 void init(){
     system("init.bat");
+
+    //inser config
+    FILE* file_config=fopen(".pey/config.txt","w");
+    fprintf(file_config,"####################################\n");
+    fclose(file_config);
+
+    //insert config global
+    FILE* file_config_global=fopen("C:\\Users\\hossein\\Documents\\GIt_Project\\config_global.txt","w");
+    fprintf(file_config_global,"####################################\n");
+    fclose(file_config_global);
 }
 
 void config(int num,char* input[]){
 
-    FILE* file_config_read=fopen(".pey/config.txt","r");
-    FILE* file_config_write=fopen(".pey/config.txt","a");
-
-    if(num==4){
-        if(strcmp(input[2],"user.name")==0){
-            char line[1000];
-            while(fgets(line,sizeof(line),file_config_read)!=NULL){
-                if(strstr(line,"user:")!=NULL)
-                    fprintf(file_config_write," %s",input[3]);
-            }
-        }
-        else if(strcmp(input[2],"user.email")==0){
-            char line[1000];
-            while(fgets(line,sizeof(line),file_config_read)!=NULL){
-                if(strstr(line,"email:")!=NULL)
-                    fprintf(file_config_write," %s",input[3]);
-            }
-        }
+    if(strcmp(input[2],"-global")==0){
+        FILE* file_config_global=fopen("C:\\Users\\hossein\\Documents\\GIt_Project\\config_global.txt","r+");
+        printf_file_config(input[3],file_config_global,input[4]);
+        fclose(file_config_global);
     }
+    else {
+        FILE* file_config=fopen(".pey/config.txt","r+");
+        printf_file_config(input[2],file_config,input[3]);
+        fclose(file_config);
+    }
+
+}
+
+void printf_file_config(char type[],FILE *file_config,char input[]){
+
+        if(strcmp(type,"user.name")==0){
+
+            fseek(file_config,0,SEEK_SET);
+             fprintf(file_config,"name:%s\0",input);
+
+        }
+        else if(strcmp(type,"user.email")==0){
+            fseek(file_config,0,SEEK_END);
+            fprintf(file_config,"email:%s\0",input);
+        }
+
+//    fprintf(file_config_write,"user: %s\nemail: %s",config->user,config->email);
+}
+
+void add (char input[]){
+
+    char text[1000]="copy ";
+    strcat (text,input);
+    strcat (text , " .pey\\stage");
+    system(text);
+}
+
+void commit(){
+
 }
 
