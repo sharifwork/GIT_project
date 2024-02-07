@@ -7,11 +7,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-typedef struct config{
-    char user[100];
-    char email[100];
-}con;
-
+bool is_init();
 void init();
 void config(int num,char* input[]);
 void printf_file_config(char type[],FILE *file_config,char input[]);
@@ -23,12 +19,14 @@ int main(int argc,char* argv[]){
     if(strcmp(argv[1],"init")==0){init();}
     if(strcmp(argv[1],"config")==0){config(argc,argv);}
     if(strcmp(argv[1],"add")==0){add(argv[2]);}
-    if(strcmp(argv[1],"commit")==0){commit();}
-
 
 }
 
 void init(){
+    if(is_init()){
+        printf("repo exist");
+        return ;
+    }
     system("init.bat");
 
     //inser config
@@ -37,7 +35,7 @@ void init(){
     fclose(file_config);
 
     //insert config global
-    FILE* file_config_global=fopen("C:\\Users\\hossein\\Documents\\GIt_Project\\config_global.txt","w");
+    FILE* file_config_global=fopen("C:\\Users\\hossein\\Documents\\GIt_Project\\project\\config_global.txt","w");
     fprintf(file_config_global,"####################################\n");
     fclose(file_config_global);
 }
@@ -45,7 +43,7 @@ void init(){
 void config(int num,char* input[]){
 
     if(strcmp(input[2],"-global")==0){
-        FILE* file_config_global=fopen("C:\\Users\\hossein\\Documents\\GIt_Project\\config_global.txt","r+");
+        FILE* file_config_global=fopen("C:\\Users\\hossein\\Documents\\GIt_Project\\project\\config_global.txt","r+");
         printf_file_config(input[3],file_config_global,input[4]);
         fclose(file_config_global);
     }
@@ -81,7 +79,21 @@ void add (char input[]){
     system(text);
 }
 
-void commit(){
+bool is_init(){
 
+    DIR *dir;
+    struct dirent* ent;
+
+    const char * path ="C:\\Users\\hossein\\Documents\\GIt_Project\\project";
+
+    dir = opendir(path);
+    while((ent=readdir(dir))!=NULL){
+
+        if(strcmp(ent->d_name,".pey")==0){
+            return true;
+        }
+
+    }
+    return false;
 }
 
